@@ -1,0 +1,42 @@
+## Instance datasets for imputing "block missing" dataset with TOBMI method
+## Missing rate with 0.2 is used to construct RNA_seq missing dataset artificially
+## DNA_methylation is regard as auxiliary dataset
+exp <- read.csv('RNA_seq_AD.csv', head = T, row.names = 1)
+cpg <- read.csv('DNA_methylation_AD.csv', head = T, row.names = 1)
+
+
+##TOBMI function used for imputation
+TOBMI <- function(x = cpg, y = exp, distance = 'manhattan') {
+  ##Calculating the distances among un-/complete cases using auxiliary dataset
+  dist.matrix <- as.matrix(dist( x , method='manhattan'))
+  
+  ##Neighbors list for every uncomplete cases
+  missing_num <- length(which(complete.cases(y) == F)) 
+  donors <- list()
+	  for(i in 1:missing_num){
+		donors[[i]] <- as.matrix(sort(dist.matrix[i,c(c(missing_num + 1):dim(x)[1])])[1 : floor(sqrt(dim(x)[1] - missing_num))])
+	  }
+	   				
+		##Neighbors will be weighted by distance 
+		donors.w<-list()		
+			for(i in 1:missing_num){
+				donors.w[[i]]<-(1/donors[[i]][,1])/sum((1/donors[[i]][,1]))
+			  }
+			  
+			  ##Imputation process
+			  for(j in 1:missing_num){
+				as.data.frame(donors.w[[j]])->donors.pool
+				row.names(donors.pool)->donors.pool$id
+				y$id <- row.names(y)
+				merge(donors.pool,y,by='id')->donors.candidates
+				donors.candidates[,2] * donors.candidates[,3:dim(donors.candidates)[2]]->donors.calculate
+				y[j,-dim(y)[2]]<-apply(donors.calculate, MARGIN = 2,sum)
+			  }
+			  imputed.data<-y[,-dim(y)[2]]
+	}
+			
+##TOBMI function will reture a complete dataset imputed by TOBMI
+imputed<-TOBMI(x = cpg, y = exp)
+
+
+
