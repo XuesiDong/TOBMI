@@ -8,7 +8,7 @@ cpg <- read.csv('DNA_methylation_AD.csv', head = T, row.names = 1)
 ##TOBMI function used for imputation
 TOBMI <- function(x = cpg, y = exp, distance = 'manhattan') {
   ##Calculating the distances among un-/complete cases using auxiliary dataset
-  dist.matrix <- as.matrix(dist( x , method='manhattan'))
+  dist.matrix <- as.matrix(dist( x , method=''))
   
   ##Neighbors list for every uncomplete cases
   missing_num <- length(which(complete.cases(y) == F)) 
