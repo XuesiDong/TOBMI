@@ -1,8 +1,8 @@
 ## Instance datasets for imputing "block missing" dataset with TOBMI method
-## Missing rate with 0.2 is used to construct RNA_seq missing dataset artificially
+## Missing value is artificially construct for RNA_seq dataset
 ## DNA_methylation is regard as auxiliary dataset
-exp <- read.csv('RNA_seq_AD.csv', head = T, row.names = 1)
-cpg <- read.csv('DNA_methylation_AD.csv', head = T, row.names = 1)
+exp <- read.csv('RNA_seq.csv', head = T, row.names = 1)
+cpg <- read.csv('DNA_methylation.csv', head = T, row.names = 1)
 
 
 ##TOBMI function used for imputation
